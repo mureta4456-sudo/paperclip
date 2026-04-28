@@ -18,11 +18,8 @@ if [ "$(id -g node)" -ne "$PGID" ]; then
     changed=1
 fi
 
-if [ "$changed" = "1" ]; then
-    chown -R node:node /paperclip
-fi
-
-mkdir -p /paperclip/instances/default
+mkdir -p /paperclip/instances/default/logs
+chown -R node:node /paperclip
 
 if [ ! -f /paperclip/instances/default/config.json ]; then
     echo "Creating config.json..."
@@ -34,6 +31,12 @@ if [ ! -f /paperclip/instances/default/config.json ]; then
     "deploymentMode": "authenticated",
     "deploymentExposure": "public",
     "publicBaseUrl": "https://paperclip-production-78e0.up.railway.app"
+  },
+  "database": {
+    "url": "USE_ENV"
+  },
+  "logging": {
+    "level": "info"
   }
 }
 EOF
