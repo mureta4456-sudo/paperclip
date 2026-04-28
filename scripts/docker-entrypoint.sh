@@ -25,5 +25,7 @@ fi
 if [ "$changed" = "1" ]; then
     chown -R node:node /paperclip
 fi
-
+echo "--- Bootstrap starting ---"
+gosu node node --import ./server/node_modules/tsx/dist/loader.mjs cli/src/index.js auth bootstrap-ceo 2>&1 || true
+echo "--- Bootstrap complete ---"
 exec gosu node "$@"
