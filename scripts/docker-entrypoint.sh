@@ -16,8 +16,27 @@ if [ "$(id -g node)" -ne "$PGID" ]; then
     changed=1
 fi
 
-if [ "$changed" = "1" ]; then
-    chown -R node:node /paperclip
+mkdir -p /paperclip/instances/default/logs
+mkdir -p /paperclip/instances/default/data
+chown -R node:node /paperclip
+
+if [ ! -f /paperclip/instances/default/config.json ]; then
+    echo "Creating config.json..."
+    gosu node sh -c 'cat > /paperclip/instances/default/config.json << '"'"'EOF'"'"'
+{
+  "server": {
+    "host": "0.0.0.0",
+    "port": 3100,
+    "deploymentMode": "authenticated",
+    "deploymentExposure": "public",
+    "publicBaseUrl": "https://paperclip-production-78e0.up.railway.app"
+  }
+}
+EOF'
 fi
+
+echo "--- Bootstrap starting ---"
+gosu node node --import ./server/node_modules/tsx/dist/loader.mjs cli/src/index.js auth bootstrap-ceo 2>&1 || true
+echo "--- Bootstrap complete ---"
 
 exec gosu node "$@"
