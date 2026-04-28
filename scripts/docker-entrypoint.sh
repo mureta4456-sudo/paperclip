@@ -16,12 +16,8 @@ if [ "$(id -g node)" -ne "$PGID" ]; then
     changed=1
 fi
 
-mkdir -p /paperclip/instances/default/logs
-mkdir -p /paperclip/instances/default/data
-chown -R node:node /paperclip
-
-echo "--- Bootstrap starting ---"
-gosu node node --import ./server/node_modules/tsx/dist/loader.mjs cli/src/index.js auth bootstrap-ceo 2>&1 || true
-echo "--- Bootstrap complete ---"
+if [ "$changed" = "1" ]; then
+    chown -R node:node /paperclip
+fi
 
 exec gosu node "$@"
